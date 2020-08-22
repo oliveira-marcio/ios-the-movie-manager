@@ -19,4 +19,3 @@ struct RequestTokenResponse: Codable {
         case requestToken = "request_token"
     }
 }
-
