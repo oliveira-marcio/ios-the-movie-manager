@@ -10,7 +10,15 @@ import Foundation
 
 class TMDBClient {
     
-    static let apiKey = "YOUR_TMDB_API_KEY"
+    static var apiKey: String {
+        if let path = Bundle.main.path(forResource: "Keys", ofType: "plist") {
+            if let keys = NSDictionary(contentsOfFile: path) as? [String : AnyObject] {
+                return (keys["TmdbApiKey"] as? String) ?? ""
+            }
+        }
+    
+        return ""
+    }
     
     struct Auth {
         static var accountId = 0
