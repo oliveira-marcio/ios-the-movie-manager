@@ -33,7 +33,7 @@ class LoginViewController: UIViewController {
     func handleRequestTokenResponse(success: Bool, error: Error?) {
         if success {
             DispatchQueue.main.async {
-                print("request token: \(TMDBClient.Auth.requestToken)")
+                print("Request token: \(TMDBClient.Auth.requestToken)")
                 TMDBClient.login(
                     username: self.emailTextField.text ?? "",
                     password: self.passwordTextField.text ?? "",
@@ -48,8 +48,19 @@ class LoginViewController: UIViewController {
     
     func handleLoginResponse(success: Bool, error: Error?) {
         if success {
-            print("validated token: \(TMDBClient.Auth.requestToken)")
-            //        performSegue(withIdentifier: "completeLogin", sender: nil)
+            print("Validated token: \(TMDBClient.Auth.requestToken)")
+            TMDBClient.createSessionId(completion: handleSessionResponse(success:error:))
+        } else {
+            print("Authentication error: \(error?.localizedDescription ?? "")")
+        }
+    }
+    
+    func handleSessionResponse(success: Bool, error: Error?) {
+        if success {
+            print("Session ID: \(TMDBClient.Auth.sessionId)")
+            DispatchQueue.main.async {
+                self.performSegue(withIdentifier: "completeLogin", sender: nil)
+            }
         } else {
             print("Authentication error: \(error?.localizedDescription ?? "")")
         }
