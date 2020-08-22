@@ -29,6 +29,7 @@ class LoginViewController: UIViewController {
     @IBAction func loginViaWebsiteTapped() {
         TMDBClient.getRequestToken() {
             (success, error) in
+            print("Request token: \(TMDBClient.Auth.requestToken)")
             if success {
                 DispatchQueue.main.async {
                     UIApplication.shared.open(TMDBClient.Endpoints.webAuth.url, options: [:], completionHandler: nil)
@@ -39,8 +40,8 @@ class LoginViewController: UIViewController {
     
     func handleRequestTokenResponse(success: Bool, error: Error?) {
         if success {
+            print("Request token: \(TMDBClient.Auth.requestToken)")
             DispatchQueue.main.async {
-                print("Request token: \(TMDBClient.Auth.requestToken)")
                 TMDBClient.login(
                     username: self.emailTextField.text ?? "",
                     password: self.passwordTextField.text ?? "",
