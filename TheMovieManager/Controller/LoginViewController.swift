@@ -61,9 +61,8 @@ class LoginViewController: UIViewController {
     func handleSessionResponse(success: Bool, error: Error?) {
         if success {
             print("Session ID: \(TMDBClient.Auth.sessionId)")
-            DispatchQueue.main.async {
-                self.performSegue(withIdentifier: "completeLogin", sender: nil)
-            }
+            self.performSegue(withIdentifier: "completeLogin", sender: nil)
+
         } else {
             print("Authentication error: \(error?.localizedDescription ?? "")")
         }
