@@ -32,6 +32,7 @@ class TMDBClient {
         
         case getWatchlist
         case getFavorites
+        case search(String)
         case getRequestToken
         case login
         case createSessionId
@@ -42,6 +43,7 @@ class TMDBClient {
             switch self {
             case .getWatchlist: return Endpoints.base + "/account/\(Auth.accountId)/watchlist/movies" + Endpoints.apiKeyParam + "&session_id=\(Auth.sessionId)"
             case .getFavorites: return Endpoints.base + "/account/\(Auth.accountId)/favorite/movies" + Endpoints.apiKeyParam + "&session_id=\(Auth.sessionId)"
+            case .search(let query): return Endpoints.base + "/search/movie" + Endpoints.apiKeyParam + "&query=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
             case .getRequestToken: return Endpoints.base + "/authentication/token/new" + Endpoints.apiKeyParam
             case .login: return Endpoints.base + "/authentication/token/validate_with_login" + Endpoints.apiKeyParam
             case .createSessionId: return Endpoints.base + "/authentication/session/new" + Endpoints.apiKeyParam
@@ -120,6 +122,16 @@ class TMDBClient {
     
     class func getFavorites(completion: @escaping ([Movie], Error?) -> Void) {
         taskForGETRequest(url: Endpoints.getFavorites.url, responseType: MovieResults.self) { (response, error) in
+            if let response = response {
+                completion(response.results, nil)
+            } else {
+                completion([], error)
+            }
+        }
+    }
+    
+    class func search(_ query: String, completion: @escaping ([Movie], Error?) -> Void) {
+        taskForGETRequest(url: Endpoints.search(query).url, responseType: MovieResults.self) { (response, error) in
             if let response = response {
                 completion(response.results, nil)
             } else {
