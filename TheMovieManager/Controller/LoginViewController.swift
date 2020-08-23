@@ -31,9 +31,7 @@ class LoginViewController: UIViewController {
             (success, error) in
             print("Request token: \(TMDBClient.Auth.requestToken)")
             if success {
-                DispatchQueue.main.async {
-                    UIApplication.shared.open(TMDBClient.Endpoints.webAuth.url, options: [:], completionHandler: nil)
-                }
+                UIApplication.shared.open(TMDBClient.Endpoints.webAuth.url, options: [:], completionHandler: nil)
             }
         }
     }
@@ -41,14 +39,11 @@ class LoginViewController: UIViewController {
     func handleRequestTokenResponse(success: Bool, error: Error?) {
         if success {
             print("Request token: \(TMDBClient.Auth.requestToken)")
-            DispatchQueue.main.async {
-                TMDBClient.login(
-                    username: self.emailTextField.text ?? "",
-                    password: self.passwordTextField.text ?? "",
-                    completion: self.handleLoginResponse(success:error:)
-                )
-            }
-
+            TMDBClient.login(
+                username: self.emailTextField.text ?? "",
+                password: self.passwordTextField.text ?? "",
+                completion: self.handleLoginResponse(success:error:)
+            )
         } else {
             print("Error requesting token: \(error?.localizedDescription ?? "")")
         }
