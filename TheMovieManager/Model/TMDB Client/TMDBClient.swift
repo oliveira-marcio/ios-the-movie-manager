@@ -64,7 +64,7 @@ class TMDBClient {
         }
     }
     
-    class func taskForGETRequest<ResponseType: Decodable>(url: URL, responseType: ResponseType.Type, completion: @escaping (ResponseType?, Error?) -> Void) {
+    class func taskForGETRequest<ResponseType: Decodable>(url: URL, responseType: ResponseType.Type, completion: @escaping (ResponseType?, Error?) -> Void) -> URLSessionTask{
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data else {
                 DispatchQueue.main.async {
@@ -85,6 +85,7 @@ class TMDBClient {
             }
         }
         task.resume()
+        return task
     }
     
     class func taskForPOSTRequest<RequestType: Encodable, ResponseType: Decodable>(url: URL, requestBody: RequestType, responseType: ResponseType.Type, completion: @escaping (ResponseType?, Error?) -> Void) {
@@ -118,7 +119,7 @@ class TMDBClient {
     }
     
     class func getWatchlist(completion: @escaping ([Movie], Error?) -> Void) {
-        taskForGETRequest(url: Endpoints.getWatchlist.url, responseType: MovieResults.self) { (response, error) in
+        _ = taskForGETRequest(url: Endpoints.getWatchlist.url, responseType: MovieResults.self) { (response, error) in
             if let response = response {
                 completion(response.results, nil)
             } else {
@@ -141,7 +142,7 @@ class TMDBClient {
     }
     
     class func getFavorites(completion: @escaping ([Movie], Error?) -> Void) {
-        taskForGETRequest(url: Endpoints.getFavorites.url, responseType: MovieResults.self) { (response, error) in
+        _ = taskForGETRequest(url: Endpoints.getFavorites.url, responseType: MovieResults.self) { (response, error) in
             if let response = response {
                 completion(response.results, nil)
             } else {
@@ -163,8 +164,8 @@ class TMDBClient {
         }
     }
     
-    class func search(_ query: String, completion: @escaping ([Movie], Error?) -> Void) {
-        taskForGETRequest(url: Endpoints.search(query).url, responseType: MovieResults.self) { (response, error) in
+    class func search(_ query: String, completion: @escaping ([Movie], Error?) -> Void) -> URLSessionTask {
+        return taskForGETRequest(url: Endpoints.search(query).url, responseType: MovieResults.self) { (response, error) in
             if let response = response {
                 completion(response.results, nil)
             } else {
@@ -174,7 +175,7 @@ class TMDBClient {
     }
     
     class func getRequestToken(completion: @escaping (Bool, Error?) -> Void) {
-        taskForGETRequest(url: Endpoints.getRequestToken.url, responseType: RequestTokenResponse.self) { (response, error) in
+        _ = taskForGETRequest(url: Endpoints.getRequestToken.url, responseType: RequestTokenResponse.self) { (response, error) in
             if let response = response {
                 Auth.requestToken = response.requestToken
                 completion(true, nil)
