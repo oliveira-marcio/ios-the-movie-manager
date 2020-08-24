@@ -57,7 +57,7 @@ class LoginViewController: UIViewController {
             print("Validated token: \(TMDBClient.Auth.requestToken)")
             TMDBClient.createSessionId(completion: handleSessionResponse(success:error:))
         } else {
-            print("Authentication error: \(error?.localizedDescription ?? "")")
+            showLoginFailure(message: error?.localizedDescription ?? "")
         }
     }
     
@@ -68,7 +68,7 @@ class LoginViewController: UIViewController {
             self.performSegue(withIdentifier: "completeLogin", sender: nil)
 
         } else {
-            print("Authentication error: \(error?.localizedDescription ?? "")")
+            showLoginFailure(message: error?.localizedDescription ?? "")
         }
     }
     
