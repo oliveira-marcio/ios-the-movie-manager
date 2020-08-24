@@ -34,6 +34,7 @@ class TMDBClient {
         case getWatchlist
         case markWatchlist
         case getFavorites
+        case markFavorite
         case search(String)
         case getRequestToken
         case login
@@ -46,6 +47,7 @@ class TMDBClient {
             case .getWatchlist: return Endpoints.base + "/account/\(Auth.accountId)/watchlist/movies" + Endpoints.apiKeyParam + Endpoints.sessionIdParam
             case .markWatchlist: return Endpoints.base + "/account/\(Auth.accountId)/watchlist" + Endpoints.apiKeyParam + Endpoints.sessionIdParam
             case .getFavorites: return Endpoints.base + "/account/\(Auth.accountId)/favorite/movies" + Endpoints.apiKeyParam + Endpoints.sessionIdParam
+            case .markFavorite: return Endpoints.base + "/account/\(Auth.accountId)/favorite" + Endpoints.apiKeyParam + Endpoints.sessionIdParam
             case .search(let query): return Endpoints.base + "/search/movie" + Endpoints.apiKeyParam + "&query=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
             case .getRequestToken: return Endpoints.base + "/authentication/token/new" + Endpoints.apiKeyParam
             case .login: return Endpoints.base + "/authentication/token/validate_with_login" + Endpoints.apiKeyParam
@@ -143,6 +145,19 @@ class TMDBClient {
             } else {
                 completion([], error)
             }
+        }
+    }
+    
+    class func markFavorite(mediaId: Int, favorite: Bool, completion: @escaping (Bool, Error?) -> Void) {
+        taskForPOSTRequest(
+            url: Endpoints.markFavorite.url,
+            requestBody: MarkFavorite(mediaType: "movie", mediaId: mediaId, favorite: favorite),
+            responseType: TMDBResponse.self) { (response, error) in
+                if let response = response {
+                    completion(response.statusCode == 1 || response.statusCode == 12 || response.statusCode == 13, nil)
+                } else {
+                    completion(false, error)
+                }
         }
     }
     
