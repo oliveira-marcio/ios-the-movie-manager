@@ -48,7 +48,7 @@ class LoginViewController: UIViewController {
                 completion: self.handleLoginResponse(success:error:)
             )
         } else {
-            print("Error requesting token: \(error?.localizedDescription ?? "")")
+            showLoginFailure(message: error?.localizedDescription ?? "")
         }
     }
     
@@ -78,5 +78,11 @@ class LoginViewController: UIViewController {
         loginButton.isEnabled = !logginingIn
         loginViaWebsiteButton.isEnabled = !logginingIn
         logginingIn ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
+    }
+    
+    func showLoginFailure(message: String) {
+        let alertVC = UIAlertController(title: "Login Failed", message: message, preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "OK", style: .default) { _ in self.setLoggingIn(false) })
+        show(alertVC, sender: nil)
     }
 }
