@@ -29,8 +29,10 @@ class TMDBClient {
     enum Endpoints {
         static let base = "https://api.themoviedb.org/3"
         static let apiKeyParam = "?api_key=\(TMDBClient.apiKey)"
+        static let sessionIdParam = "&session_id=\(Auth.sessionId)"
         
         case getWatchlist
+        case markWatchlist
         case getFavorites
         case search(String)
         case getRequestToken
@@ -41,8 +43,9 @@ class TMDBClient {
         
         var stringValue: String {
             switch self {
-            case .getWatchlist: return Endpoints.base + "/account/\(Auth.accountId)/watchlist/movies" + Endpoints.apiKeyParam + "&session_id=\(Auth.sessionId)"
-            case .getFavorites: return Endpoints.base + "/account/\(Auth.accountId)/favorite/movies" + Endpoints.apiKeyParam + "&session_id=\(Auth.sessionId)"
+            case .getWatchlist: return Endpoints.base + "/account/\(Auth.accountId)/watchlist/movies" + Endpoints.apiKeyParam + Endpoints.sessionIdParam
+            case .markWatchlist: return Endpoints.base + "/account/\(Auth.accountId)/watchlist" + Endpoints.apiKeyParam + Endpoints.sessionIdParam
+            case .getFavorites: return Endpoints.base + "/account/\(Auth.accountId)/favorite/movies" + Endpoints.apiKeyParam + Endpoints.sessionIdParam
             case .search(let query): return Endpoints.base + "/search/movie" + Endpoints.apiKeyParam + "&query=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
             case .getRequestToken: return Endpoints.base + "/authentication/token/new" + Endpoints.apiKeyParam
             case .login: return Endpoints.base + "/authentication/token/validate_with_login" + Endpoints.apiKeyParam
@@ -117,6 +120,19 @@ class TMDBClient {
             } else {
                 completion([], error)
             }
+        }
+    }
+    
+    class func markWatchlist(mediaId: Int, watchList: Bool, completion: @escaping (Bool, Error?) -> Void) {
+        taskForPOSTRequest(
+            url: Endpoints.markWatchlist.url,
+            requestBody: MarkWatchlist(mediaType: "movie", mediaId: mediaId, watchlist: watchList),
+            responseType: TMDBResponse.self) { (response, error) in
+                if let response = response {
+                    completion(response.statusCode == 1 || response.statusCode == 12 || response.statusCode == 13, nil)
+                } else {
+                    completion(false, error)
+                }
         }
     }
     
