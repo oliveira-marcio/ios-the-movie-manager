@@ -41,6 +41,7 @@ class TMDBClient {
         case createSessionId
         case webAuth
         case logout
+        case posterImage(String)
         
         var stringValue: String {
             switch self {
@@ -54,6 +55,7 @@ class TMDBClient {
             case .createSessionId: return Endpoints.base + "/authentication/session/new" + Endpoints.apiKeyParam
             case .webAuth: return "https://www.themoviedb.org/authenticate/\(Auth.requestToken)?redirect_to=themoviemanager:authenticate"
             case .logout: return Endpoints.base + "/authentication/session" + Endpoints.apiKeyParam
+            case .posterImage(let posterPath): return "https://image.tmdb.org/t/p/w500\(posterPath)"
             }
         }
         
@@ -222,6 +224,16 @@ class TMDBClient {
             Auth.requestToken = ""
             Auth.sessionId = ""
             completion()
+        }
+        task.resume()
+    }
+    
+    class func downloadPosterImage(path: String, completion: @escaping (Data?, Error?) -> Void) {
+        let task = URLSession.shared.dataTask(with: Endpoints.posterImage(path).url) {
+            (data, response, error) in
+            DispatchQueue.main.async {
+                completion(data, error)
+            }
         }
         task.resume()
     }
