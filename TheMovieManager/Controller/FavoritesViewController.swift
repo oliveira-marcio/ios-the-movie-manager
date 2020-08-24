@@ -55,6 +55,16 @@ extension FavoritesViewController: UITableViewDataSource, UITableViewDelegate {
         
         cell.textLabel?.text = movie.title
         
+        if let posterPath = movie.posterPath {
+            TMDBClient.downloadPosterImage(path: posterPath) { (data, error) in
+                guard let data = data else {
+                    return
+                }
+                cell.imageView?.image = UIImage(data: data)
+                cell.setNeedsLayout()
+            }
+        }
+        
         return cell
     }
     
