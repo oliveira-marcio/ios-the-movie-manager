@@ -73,6 +73,10 @@ class LoginViewController: UIViewController {
     }
     
     func setLoggingIn(_ logginingIn: Bool) {
+        emailTextField.isEnabled = !logginingIn
+        passwordTextField.isEnabled = !logginingIn
+        loginButton.isEnabled = !logginingIn
+        loginViaWebsiteButton.isEnabled = !logginingIn
         logginingIn ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
     }
 }
