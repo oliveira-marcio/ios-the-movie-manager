@@ -14,6 +14,7 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var loginViaWebsiteButton: UIButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -23,10 +24,12 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func loginTapped(_ sender: UIButton) {
+        setLoggingIn(true)
         TMDBClient.getRequestToken(completion: handleRequestTokenResponse(success:error:))
     }
     
     @IBAction func loginViaWebsiteTapped() {
+        setLoggingIn(true)
         TMDBClient.getRequestToken() {
             (success, error) in
             print("Request token: \(TMDBClient.Auth.requestToken)")
@@ -59,6 +62,7 @@ class LoginViewController: UIViewController {
     }
     
     func handleSessionResponse(success: Bool, error: Error?) {
+        setLoggingIn(false)
         if success {
             print("Session ID: \(TMDBClient.Auth.sessionId)")
             self.performSegue(withIdentifier: "completeLogin", sender: nil)
@@ -66,5 +70,9 @@ class LoginViewController: UIViewController {
         } else {
             print("Authentication error: \(error?.localizedDescription ?? "")")
         }
+    }
+    
+    func setLoggingIn(_ logginingIn: Bool) {
+        logginingIn ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
     }
 }
